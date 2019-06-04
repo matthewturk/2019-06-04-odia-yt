@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/vega"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed"></script>
+  </head>
+  <body>
+    <div id="vis-yt-citations"></div>
+
+    <script type="text/javascript">
+        var yourVlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+            "data": {
+                "url": "../data/yt_citations.json",
+                "format": {
+                    "parse": {"pubdate": "date:'%Y-%m-%d'"}
+                }
+            },
+            "transform": [
+                {"timeUnit": "yearquarter", "field": "pubdate", "as": "pubquarter",
+                    "type": "temporal"},
+                {"aggregate": [{"op": "count", "as": "count"}], "groupby": ["pubquarter"]},
+                {
+                    "sort": [{"field": "pubquarter"}],
+                    "window": [{"op": "sum", "field": "count", "as": "cumulative_count"}],
+                    "frame": [null, 0]
+                },
+            ],
+            "hconcat": [ 
+                {
+                    "mark": "bar",
+                    "encoding": {
+                        "x": {
+                            "field": "pubquarter",
+                            "type": "temporal"
+                        },
+                        "y": {
+                            "field": "cumulative_count",
+                            "type": "quantitative"
+                        }
+                    },
+                    "config": {
+                        "axis": {"shortTimeLabels": true}
+                    }
+                },
+                {
+                    "mark": {"type": "bar"},
+                    "encoding": {
+                        "x": {
+                            "field": "pubquarter",
+                            "type": "temporal"
+                        },
+                        "y": {"field":"count", "type":"quantitative"}
+                    }
+                }
+            ]
+        };
+
+      vegaEmbed('#vis-yt-citations', yourVlSpec);
+    </script>
+  </body>
+</html>
