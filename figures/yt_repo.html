@@ -54,7 +54,7 @@
                         {"aggregate": [{"op": "sum", "field": "count", "as":"author_count"}], "groupby": ["author"] },
                         {"window": [{ "op": "rank", "as": "rank" }],
                          "sort": [{"order": "descending", "field": "author_count"}]},
-                        {"filter": {"field": "rank", "lt": 10}}
+                        {"filter": {"field": "rank", "lte": 10}}
                     ],
                     "mark": {"type": "bar"},
                     "encoding": {
