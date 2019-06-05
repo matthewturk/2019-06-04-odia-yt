@@ -14,12 +14,12 @@
             },
             "transform": [
                 {
-                 "timeUnit": "yearquarter",
-                 "field": "committed_datetime",
-                 "as": "commit_quarter"
+                    "timeUnit": "yearquarter",
+                    "field": "committed_datetime",
+                    "as": "commit_quarter"
                 },
                 {"aggregate": [ {"op": "count", "as":"count"} ],
-                    "groupby": ["commit_quarter", "author"] }
+                    "groupby": ["commit_quarter", "author"] },
             ],
             "hconcat": [
                 {
@@ -34,7 +34,8 @@
                         "y": {
                             "aggregate": "sum",
                             "field": "count",
-                            "type": "quantitative"
+                            "type": "quantitative",
+                            "axis": {"title": "# commits"}
                         },
                         "x": {
                             "field": "commit_quarter",
@@ -53,26 +54,38 @@
                         {"filter": {"selection": "commit_range"}},
                         {"aggregate": [{"op": "sum", "field": "count", "as":"author_count"}], "groupby": ["author"] },
                         {"window": [{ "op": "rank", "as": "rank" }],
-                         "sort": [{"order": "descending", "field": "author_count"}]},
-                        {"filter": {"field": "rank", "lte": 10}}
+                            "sort": [{"order": "descending", "field": "author_count"}]},
+                        {"filter": {"field": "rank", "lte": 10}},
+                        {"calculate": "split(datum['author'], ' <', 1)[0]", "as": "author_name"}
                     ],
                     "mark": {"type": "bar"},
                     "encoding": {
                         "y": {
-                            "field": "author",
+                            "field": "author_name",
                             "type": "nominal",
                             "axis": {"title": "top 10 authors"},
                             "sort": {"order": "ascending", "field": "rank"}
                         },
                         "x": {
                             "type": "quantitative",
-                            "field": "author_count"
+                            "field": "author_count",
+                            "axis": {"title": "number of commits"}
                         }
                     }
                 }
-            ]
+            ],
+            "config": {
+                "axis": {
+                    "labelFontSize": 16,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 16,
+                    "titleFontSize": 16
+                },
+            }
         };
 
-        vegaEmbed('#vis-yt-repo', yourVlSpec);
+        vegaEmbed('#vis-yt-repo', yourVlSpec, {'actions': false});
     </script>
 </body>
