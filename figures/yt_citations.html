@@ -18,11 +18,11 @@
                 }
             },
             "transform": [
-                {"timeUnit": "yearquarter", "field": "pubdate", "as": "pubquarter",
+                {"timeUnit": "year", "field": "pubdate", "as": "pubyear",
                     "type": "temporal"},
-                {"aggregate": [{"op": "count", "as": "count"}], "groupby": ["pubquarter"]},
+                {"aggregate": [{"op": "count", "as": "count"}], "groupby": ["pubyear"]},
                 {
-                    "sort": [{"field": "pubquarter"}],
+                    "sort": [{"field": "pubyear"}],
                     "window": [{"op": "sum", "field": "count", "as": "cumulative_count"}],
                     "frame": [null, 0]
                 },
@@ -32,12 +32,16 @@
                     "mark": "bar",
                     "encoding": {
                         "x": {
-                            "field": "pubquarter",
-                            "type": "temporal"
+                            "field": "pubyear",
+                            "type": "ordinal",
+                            "timeUnit": "year",
+                            "axis": { "values": [2011, 2013, 2015, 2017, 2019],
+                                      "title": "Year" }
                         },
                         "y": {
                             "field": "cumulative_count",
-                            "type": "quantitative"
+                            "type": "quantitative",
+                            "axis": {"title": "Cumulative Citations" }
                         }
                     },
                     "config": {
@@ -48,16 +52,30 @@
                     "mark": {"type": "bar"},
                     "encoding": {
                         "x": {
-                            "field": "pubquarter",
-                            "type": "temporal"
+                            "field": "pubyear",
+                            "timeUnit": "year",
+                            "type": "ordinal",
+                            "axis": { "values": [2011, 2013, 2015, 2017, 2019] ,
+                            "title": "Year"}
                         },
-                        "y": {"field":"count", "type":"quantitative"}
+                        "y": {"field":"count", "type":"quantitative",
+                            "axis": {"title": "Citations" }}
                     }
                 }
-            ]
+            ],
+            "config": {
+                "axis": {
+                    "labelFontSize": 16,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 16,
+                    "titleFontSize": 16
+                },
+            }
         };
 
-      vegaEmbed('#vis-yt-citations', yourVlSpec);
+        vegaEmbed('#vis-yt-citations', yourVlSpec, {'actions': false});
     </script>
   </body>
 </html>
